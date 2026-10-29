@@ -14,4 +14,7 @@ COPY --from=build /out/libratrack /libratrack
 # Непривілейований користувач (nobody).
 USER 65534:65534
 EXPOSE 8080
+# curl у scratch немає — бінарник сам перевіряє GET /health.
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
+  CMD ["/libratrack", "-healthcheck"]
 ENTRYPOINT ["/libratrack"]

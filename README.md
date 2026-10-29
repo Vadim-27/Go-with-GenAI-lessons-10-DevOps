@@ -62,6 +62,19 @@ docker compose --profile app up -d --build           # app на :8080 + postgres
 | SQL-міграції (golang-migrate `iofs`) | `migrations/migrations.go` → `migrations.FS` |
 | OpenAPI | `internal/docs/docs.go` |
 
+## DevOps: Vagrant, Floci, k3s
+
+Чекліст і порядок кроків — у [HomeWork_DevOps.md](HomeWork_DevOps.md).
+
+| Файл | Що робить |
+|---|---|
+| [Vagrantfile](Vagrantfile), [scripts/provision.sh](scripts/provision.sh) | VM Ubuntu 22.04 з Docker, Go, AWS CLI + awslocal, k3s |
+| [compose.floci.yaml](compose.floci.yaml) | Floci — емулятор AWS на `localhost:4566` у VM |
+| [demos/ec2/run.sh](demos/ec2/run.sh), [demos/lambda/](demos/lambda/) | Demo 1 (EC2) і Demo 2 (Go Lambda) на Floci |
+| [k8s/](k8s/) | Postgres + LibraTrack у k3s; `bash /app/k8s/deploy.sh` |
+
+Порти на Windows: `18080` — Compose, `30080` — k3s NodePort, `8088` — Traefik Ingress.
+
 ## Тести
 
 ```bash
@@ -79,6 +92,7 @@ CSRF, автоекранування, cookie, вбудована статика)
 | [design_v10.txt](design_v10.txt) | HttpOnly-cookie замість localStorage, аудит шаблонів, перевірка ізоляції бінарника |
 | [prompts.txt](prompts.txt) | промпти завдань 2.1 і 2.2 (тема 10) та архів теми 9 |
 | [HomeWork 10.md](HomeWork%2010.md) | текст завдання теми 10 |
+| [HomeWork_DevOps.md](HomeWork_DevOps.md) | чекліст завдання DevOps: Vagrant, Docker, Floci, k3s |
 | [security_design.txt](security_design.txt), [security_audit.md](security_audit.md) | безпека API (тема 9) |
 
 Ролі API: `reader`, `librarian`, `admin`; JSON API приймає лише `Authorization: Bearer`.

@@ -20,6 +20,12 @@ import (
 )
 
 func main() {
+	// Docker HEALTHCHECK: в образі FROM scratch немає curl, тому бінарник
+	// сам перевіряє /health і повертає код виходу 0 або 1.
+	if len(os.Args) > 1 && os.Args[1] == "-healthcheck" {
+		os.Exit(healthcheck())
+	}
+
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
 		log.Fatal("DATABASE_URL is not set")
@@ -122,6 +128,21 @@ func bootstrapAdmin(users repository.UserRepository) error {
 	}
 	log.Printf("bootstrap: created admin %s", user.Email)
 	return nil
+}
+
+func healthcheck() int {
+	client := &http.Client{Timeout: 3 * time.Second}
+	resp, err := client.Get("http://127.0.0.1:" + getenv("PORT", "8080") + "/health")
+	if err != nil {
+		log.Printf("healthcheck: %v", err)
+		return 1
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("healthcheck: status %d", resp.StatusCode)
+		return 1
+	}
+	return 0
 }
 
 func getenv(key, fallback string) string {
